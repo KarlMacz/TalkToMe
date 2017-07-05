@@ -24,24 +24,33 @@ var app = {
         };
 
         recognition.onresult = function(e) {
+            var link = '';
+
+            showLoader();
+
             if(e.results.length > 0) {
                 userResponse = e.results[0][0].transcript;
 
-                $('#content-block').append('<div class="card-panel"><h5>' + e.results[0][0].transcript + '</h5></div>');
+                $('#content-block').append('<div class="card-panel"><h5>' + userResponse + '</h5></div>');
             }
 
-            aiResponse = 'This is a test message.';
+            aiResponse = app.reply(userResponse);
 
-            $('#content-block').append('<div class="card-panel light-blue lighten-4"><h5>' + aiResponse + '</h5></div>').promise().done(function() {
-                app.speak(aiResponse, locale);
+            if(aiResponse.data.link !== undefined || aiResponse.data.link !== null || aiResponse.data.link !== '') {
+                link = '<div><a href="' + aiResponse.data.link + '">' + aiResponse.data.link + '</a></div>';
+            }
+
+            $('#content-block').append('<div class="card-panel light-blue lighten-4"><h5>' + aiResponse.message + '</h5>' + link + '</div>').promise().done(function() {
+                app.speak(aiResponse.message, locale);
+                hideLoader();
             });
         };
 
         recognition.onnomatch = function(e) {
-            aiResponse = 'Sorry. What was that again?';
+            aiResponse = app.reply(userResponse);
 
-            $('#content-block').append('<div class="card-panel light-blue lighten-4"><h5>' + aiResponse + '</h5></div>').promise().done(function() {
-                app.speak(aiResponse, locale);
+            $('#content-block').append('<div class="card-panel light-blue lighten-4"><h5>' + aiResponse.message + '</h5></div>').promise().done(function() {
+                app.speak(aiResponse.message, locale);
             });
         };
 
@@ -79,5 +88,96 @@ var app = {
         });
     },
     reply: function(text) {
+        var words = text.split(' ');
+        var uri = '';
+
+        if(words[0] === 'search') {
+            if(words[1] === 'for') {
+                if(words[2] !== undefined || words[2] !== null) {
+                    uri = app.searchWeb('google', getPhrase(words, 2));
+
+                    return {
+                        message: 'This is what I found on Google.',
+                        data: {
+                            link: uri
+                        }
+                    };
+                } else {
+                    return {
+                        message: 'Sorry. What was that again?'
+                    };
+                }
+            } else if(words[1] !== '') {
+                if(words[2] === 'for') {
+                    if(words[3] !== undefined || words[3] !== null) {
+                        uri = app.searchWeb(words[1], getPhrase(words, 3));
+
+                        return {
+                            message: 'This is what I found on ' + ucfl(words[1]) + '.',
+                            data: {
+                                link: uri
+                            }
+                        };
+                    } else {
+                        return {
+                            message: 'Sorry. What was that again?'
+                        };
+                    }
+                } else {
+                    return {
+                        message: 'Sorry. What was that again?'
+                    };
+                }
+            } else {
+                return {
+                    message: 'Sorry. What was that again?'
+                };
+            }
+        } else {
+            return {
+                message: 'Sorry. What was that again?'
+            };
+        }
+    },
+    searchWeb: function(where, what) {
+        var link = false;
+
+        switch(where.toLowerCase()) {
+            case 'google':
+                link = 'https://www.google.com/?gfe_rd=cr&ei=YhRdWcSMH7TEXvz8nqAN&gws_rd=ssl#q=' + encodeURI(what)
+
+                break;
+            case 'yahoo':
+                link = 'https://search.yahoo.com/search;_ylt=AwrwNF2SJF1ZjJ0AA0izRwx.;_ylc=X1MDMjExNDczNDAwMwRfcgMyBGZyA3lmcC10LTcxMQRncHJpZANQdFRYSUVWa1FfV3E3TzFLS1lnUnBBBG5fcnNsdAMwBG5fc3VnZwMwBG9yaWdpbgNwaC5zZWFyY2gueWFob28uY29tBHBvcwMwBHBxc3RyAwRwcXN0cmwDBHFzdHJsAzM5BHF1ZXJ5A3lhaG9vJTIwc2VhcmNoJTIwYXBpJTIwZm9yJTIwamF2YXNjcmlwdAR0X3N0bXADMTQ5OTI3NjQ0Mw--?p=' + encodeURI(what);
+
+                break;
+            default:
+                link = false;
+
+                break;
+        }
+
+        if(link !== false) {
+            window.open(link, '_self', 'location=no');
+        }
+
+        return link;
+    },
+    google_search: function(what) {
+        $.ajax({
+            url: 'https://www.googleapis.com/customsearch/v1',
+            method: 'GET',
+            data: {
+                key: googleApiKey,
+                cx: googleCustomSearchID,
+                q: what
+            },
+            dataType: 'json',
+            success: function(response) {
+                alert(response);
+            }
+        });
+
+        return false;
     }
 };
