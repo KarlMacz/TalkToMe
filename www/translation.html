@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <!-- <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width"> -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <title>Talk To Me</title>
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/materialize.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .page-content {
+            padding: 15px 15px 40px 15px;
+        }
+
+        .ttmLoader {
+            align-items: center;
+            background-color: rgba(34, 34, 34, 0.5);
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .ttmLoader > .content {
+            display: block;
+        }
+
+        .card-panel {
+            padding: 10px 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper">
+                <div class="brand-logo">TalkToMe</div>
+                <a href="#" data-activates="slide-out" class="button-collapse"><span class="fa fa-bars fa-fw"></span></a>
+            </div>
+        </nav>
+    </div>
+    <ul id="slide-out" class="side-nav">
+        <li><a href="index.html">Home</a></li>
+        <li class="active"><a href="translation.html">Translations</a></li>
+    </ul>
+    <div class="page-content">
+        <div class="card-panel">
+            <h6 class="normalize">Status:</h6>
+            <h5 id="status">Idle</h5>
+        </div>
+        <div class="card-panel">
+            <h6 class="normalize">Translation:</h6>
+            <div class="input-field">
+                <select id="locale-picker">
+                    <optgroup label="From English To...">
+                        <option value="en-US:ja-JP" selected>English to Japanese</option>
+                        <option value="en-US:ko-KR">English to Korean</option>
+                    </optgroup>
+                    <optgroup label="From Korean To...">
+                        <option value="ko-KR:en-US">Korean to English</option>
+                        <option value="ko-KR:ja-JP">Korean to Japanese</option>
+                    </optgroup>
+                    <optgroup label="From Japanese To...">
+                        <option value="ja-JP:en-US">Japanese to English</option>
+                        <option value="ja-JP:ko-KR">Japanese to Korean</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+        <div class="card-panel">
+            <h6 class="normalize">Translate What:</h6>
+            <h5 id="result"></h5>
+        </div>
+        <div class="card-panel">
+            <h6 class="normalize">Translate To:</h6>
+            <h5 id="translation"></h5>
+        </div>
+        <div class="fixed-action-btn active" style="bottom: 15px; right: 15px;">
+            <button id="btnStartListening" class="btn-floating btn-large red waves-effect waves-light">Go</button>
+        </div>
+    </div>
+    <div class="ttmLoader">
+        <div class="content white-text">
+            <span class="fa fa-circle-o-notch fa-spin fa-fw fa-5x"></span>
+            <h5>Loading...</h5>
+        </div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+    <script type="text/javascript" src="js/translation.js"></script>
+    <script>
+        showLoader();
+
+        $(document).ready(function() {
+            $('.button-collapse').sideNav({
+                draggable: true
+            });
+            $('select').material_select();
+
+            hideLoader();
+        });
+
+        app.initialize();
+    </script>
+</body>
+</html>
