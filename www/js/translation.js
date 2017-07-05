@@ -22,7 +22,7 @@ var app = {
 
         recognition.onresult = function(e) {
             if (e.results.length > 0) {
-                app.translate(e.results[0][0].transcript);
+                app.google_translate(e.results[0][0].transcript);
             }
         };
 
@@ -57,7 +57,7 @@ var app = {
             }
         });
     },
-    translate: function(text) {
+    google_translate: function(what) {
         showLoader();
 
         $.ajax({
@@ -65,7 +65,7 @@ var app = {
             method: 'GET',
             data: {
                 key: googleApiKey,
-                q: text,
+                q: what,
                 target: toLocale.split('-')[0],
                 format: 'text'
             },
@@ -75,7 +75,7 @@ var app = {
 
                 var translation = response.data.translations[0].translatedText;
 
-                $('#result').text(text);
+                $('#result').text(what);
                 $('#translation').text(translation);
 
                 TTS.speak({
