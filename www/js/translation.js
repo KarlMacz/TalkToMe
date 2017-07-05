@@ -1,4 +1,3 @@
-var talkToMeApiKey = 'AIzaSyCe5mqPweAAxOSjvllzxjWtN3re9Lp1a0Y';
 var recognition = null;
 var isRunning = null;
 var locale = 'en-US';
@@ -65,7 +64,7 @@ var app = {
             url: 'https://translation.googleapis.com/language/translate/v2',
             method: 'GET',
             data: {
-                key: talkToMeApiKey,
+                key: googleApiKey,
                 q: text,
                 target: toLocale.split('-')[0],
                 format: 'text'
