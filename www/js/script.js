@@ -1,3 +1,11 @@
+function objectLength(obj) {
+    return Object.keys(obj).length;
+}
+
+function objectKeyExists(obj, key) {
+    return obj.hasOwnProperty(key);
+}
+
 function showLoader() {
     $('.ttmLoader').fadeIn(250);
 }

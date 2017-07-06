@@ -36,18 +36,20 @@ var app = {
 
             aiResponse = app.reply(userResponse);
 
-            if(aiResponse.data.link !== undefined || aiResponse.data.link !== null || aiResponse.data.link !== '') {
-                link = '<div><a href="' + aiResponse.data.link + '">' + aiResponse.data.link + '</a></div>';
+            if(objectKeyExists(aiResponse, 'data')) {
+                if(objectKeyExists(aiResponse.data, 'link') && (aiResponse.data.link !== undefined || aiResponse.data.link !== null || aiResponse.data.link !== '')) {
+                    link = '<div><a href="' + aiResponse.data.link + '">' + aiResponse.data.link + '</a></div>';
+                }
             }
 
-            $('#content-block').append('<div class="card-panel light-blue lighten-4"><h5>' + aiResponse.message + '</h5>' + link + '</div>').promise().done(function() {
-                app.speak(aiResponse.message, locale);
+            $('#content-block').append('<div class="card-panel light-blue lighten-4"><h5>' + aiResponse.message + '</h5></div>').promise().done(function() {
                 hideLoader();
+                app.speak(aiResponse.message, locale);
             });
         };
 
         recognition.onnomatch = function(e) {
-            aiResponse = app.reply(userResponse);
+            aiResponse = app.reply('');
 
             $('#content-block').append('<div class="card-panel light-blue lighten-4"><h5>' + aiResponse.message + '</h5></div>').promise().done(function() {
                 app.speak(aiResponse.message, locale);
@@ -88,22 +90,23 @@ var app = {
         });
     },
     reply: function(text) {
-        var words = text.split(' ');
+        var words = text.toLowerCase().split(' ');
         var uri = '';
+        var responseData = null;
 
         if(words[0] === 'search') {
             if(words[1] === 'for') {
                 if(words[2] !== undefined || words[2] !== null) {
                     uri = app.searchWeb('google', getPhrase(words, 2));
 
-                    return {
+                    responseData = {
                         message: 'This is what I found on Google.',
                         data: {
                             link: uri
                         }
                     };
                 } else {
-                    return {
+                    responseData = {
                         message: 'Sorry. What was that again?'
                     };
                 }
@@ -112,32 +115,34 @@ var app = {
                     if(words[3] !== undefined || words[3] !== null) {
                         uri = app.searchWeb(words[1], getPhrase(words, 3));
 
-                        return {
+                        responseData = {
                             message: 'This is what I found on ' + ucfl(words[1]) + '.',
                             data: {
                                 link: uri
                             }
                         };
                     } else {
-                        return {
+                        responseData = {
                             message: 'Sorry. What was that again?'
                         };
                     }
                 } else {
-                    return {
+                    responseData = {
                         message: 'Sorry. What was that again?'
                     };
                 }
             } else {
-                return {
+                responseData = {
                     message: 'Sorry. What was that again?'
                 };
             }
         } else {
-            return {
+            responseData = {
                 message: 'Sorry. What was that again?'
             };
         }
+
+        return responseData;
     },
     searchWeb: function(where, what) {
         var link = false;
